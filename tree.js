@@ -34,7 +34,7 @@
   Tree.prototype.init = function() {
   	this.calNoOfBranches();
   	this.initBranches();
-  	//this.grow();
+  	this.grow();
   };
 
   Tree.prototype.initBranches = function() {
@@ -48,20 +48,19 @@
   		if(i === 0) {
   			location = {
   				start: {x: _ROOT_START.x, y: _ROOT_START.y},
-  				end: {x: _ROOT_START.x, y: _ROOT_START.y + 50}
+  				end: {x: _ROOT_START.x, y: _ROOT_START.y - 50}
   			};
   		} else {
   			pid = this.getBranchParent(cid);
-  		}
-  		location = this.calBranchLocation(this.branches[pid].end, );
-  		// this.branches[cid].setLocation(location);
+  		  location = this.calBranchLocation(this.branches[pid].end, cid % 2 === 0 );
+      }
+  		this.branches[cid].setLocation(location);
   	}
-  	// console.log(this.branches);
+  	console.log(this.branches);
   };
 
   Tree.prototype.getBranchParent = function(cid) {
-  	if(cid % 2 === 0) return cid / 2;
-  	else return (cid - 1) / 2;
+  	return Math.floor(cid / 2);
   };
   Tree.getBranchChild = function(which) {
   	if(which === 'left') {
@@ -85,10 +84,12 @@
 
   };
 
-  Tree.prototype.calBranchLocation = function(start, offset) {
-  	offset = Math.PI / 6;
-  	var x = start.x - 50 * Math.sin(offset);
-  	var y = start.y - 50 * Math.cos(offset);
+  Tree.prototype.calBranchLocation = function(start, isLeft) {
+    var fine = 4,
+      offset = (isLeft ? Math.PI / fine : -(Math.PI / fine)),
+      x = start.x - 50 * Math.sin(offset),
+      y = start.y - 50 * Math.cos(offset);
+
   	return {
   		start: start,
   		end: {x: x, y: y}
@@ -98,18 +99,10 @@
   Tree.prototype.grow = function() {
   	var svg = _wrap;
   	var b, frag = document.createDocumentFragment();
-  	var location;
-  	var start = {
-  		x: _ROOT_START.x,
-  		y: _ROOT_START.y
-  	};
-
+  	
   	for(var i in this.branches) {
   		b = this.branches[i];
-  		
-  		//location = this.calBranchLocation(start);
-  		
-  		//b.setLocation(location);
+      console.log(b);
   		frag.appendChild(b.ele);
   	}
   	svg.appendChild(frag);
@@ -153,7 +146,7 @@
   getDimension();
 
   var tree = new Tree({
-  	depth: 2
+  	depth: 5
   });
     
 })();
