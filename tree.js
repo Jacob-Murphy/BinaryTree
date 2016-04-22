@@ -26,6 +26,10 @@
   	this.depth = conf.depth || 5;
   	this.noOfBranches = null;
   	this.branches = {};
+    this.ROOT_LENGTH = 100;
+    this.ROOT_WIDTH = 15;
+    this.branchColor = 'rgb(40, 0, 0)';
+    this.leafColor = 'rgb(0, 100, 0)';
 
   	this.init();
 
@@ -38,63 +42,67 @@
   };
 
   Tree.prototype.initBranches = function() {
-  	var svg = _wrap;
-  	var location;
-  	var pid;
-  	var cid;
+  	var svg = _wrap,
+  	 properties,
+  	 pid,cid;
+
   	for(var i = 0 ; i < this.noOfBranches; i += 1) {
   		cid = i + 1;
   		this.branches[cid] = new Branch({ parent: svg, node: cid });
   		if(i === 0) {
-  			location = {
+  			properties = {
   				start: {x: _ROOT_START.x, y: _ROOT_START.y},
-  				end: {x: _ROOT_START.x, y: _ROOT_START.y - 50}
+  				end: {x: _ROOT_START.x, y: _ROOT_START.y - this.ROOT_LENGTH},
+          ln: this.ROOT_LENGTH,
+          width: this.ROOT_WIDTH,
+          color: this.branchColor,
+          rad: 0
   			};
   		} else {
   			pid = this.getBranchParent(cid);
-  		  location = this.calBranchLocation(this.branches[pid].end, cid % 2 === 0 );
+  		  properties = this.calBranchProperties({
+          start: this.branches[pid].end,
+          isLeft: cid % 2 === 0,
+          parentLn: this.branches[pid].ln,
+          parentWidth: this.branches[pid].width,
+          parentRad: this.branches[pid].rad,
+          level: Math.floor(Math.log2(cid))
+        });
       }
-  		this.branches[cid].setLocation(location);
+  		this.branches[cid].setProperties(properties);
   	}
-  	console.log(this.branches);
+  };
+
+  Tree.prototype.calBranchProperties = function(options) {
+    var fine = 6, lnCutRatio = 0.85, widthCutRatio = 0.7,
+      offset = options.parentRad + (options.isLeft ? Math.PI / fine : -(Math.PI / fine)),
+      x = options.start.x - (options.parentLn * lnCutRatio) * Math.sin(offset),
+      y = options.start.y - (options.parentLn * lnCutRatio) * Math.cos(offset);
+
+  	return {
+  		start: options.start,
+  		end: {x: x, y: y},
+      rad: offset,
+      ln: options.parentLn * lnCutRatio,
+      width: options.parentWidth * widthCutRatio,
+      color: options.level < this.depth - 1 ? this.branchColor : this.leafColor
+  	};
   };
 
   Tree.prototype.getBranchParent = function(cid) {
-  	return Math.floor(cid / 2);
-  };
-  Tree.getBranchChild = function(which) {
-  	if(which === 'left') {
-
-  	}else {
-
-  	}
+    return Math.floor(cid / 2);
   };
 
   Tree.prototype.calNoOfBranches = function() {
-  	if(!this.depth) return;
-  	var r = 0, i = this.depth;
-  	while(i-- > 0) {
-  		r += Math.pow(2, i);
-  	}
+    if(!this.depth) return;
+    var r = 0, i = this.depth;
+    while(i-- > 0) {
+      r += Math.pow(2, i);
+    }
 
-  	this.noOfBranches = r;
+    this.noOfBranches = r;
   };
 
-  Tree.prototype.draw = function() {
-
-  };
-
-  Tree.prototype.calBranchLocation = function(start, isLeft) {
-    var fine = 4,
-      offset = (isLeft ? Math.PI / fine : -(Math.PI / fine)),
-      x = start.x - 50 * Math.sin(offset),
-      y = start.y - 50 * Math.cos(offset);
-
-  	return {
-  		start: start,
-  		end: {x: x, y: y}
-  	};
-  };
  
   Tree.prototype.grow = function() {
   	var svg = _wrap;
@@ -102,7 +110,6 @@
   	
   	for(var i in this.branches) {
   		b = this.branches[i];
-      console.log(b);
   		frag.appendChild(b.ele);
   	}
   	svg.appendChild(frag);
@@ -113,10 +120,11 @@
   	this.node = conf.node;
   	this.parent = conf.parent;
   	this.ele = genEle('line');
+    this.ln = conf.ln || 50;
+    this.width = conf.width || 2,
     this.start = conf.start || {x : 10, y: 10};
     this.end = conf.end || {x: 50, y: 50};
-    this.color = conf.color || 'rgb(0,0,0)';
-    this.strokeWidth = conf.strokeWidth || 2;
+    this.color = conf.color || 'rgb(128, 0, 0)';
 
     this.init();
   };
@@ -130,23 +138,32 @@
   	this.ele.setAttribute('y1', this.start.y);
   	this.ele.setAttribute('x2', this.end.x);
   	this.ele.setAttribute('y2', this.end.y);
-  	this.ele.setAttribute('style', 'stroke:'+ this.color +';stroke-width:'+ this.strokeWidth);
+  	this.ele.setAttribute('style', 'stroke:'+ this.color +';stroke-width:'+ this.width);
   };
 
-  Branch.prototype.setLocation = function(location) {
-  	this.start = location.start || this.start;
-  	this.end = location.end || this.end;
-  	this.onUpdateLocation(location);
+  Branch.prototype.setProperties = function(properties) {
+  	this.start = properties.start || this.start;
+  	this.end = properties.end || this.end;
+    this.ln = properties.ln;
+    this.rad = properties.rad;
+    this.color = properties.color || 'rgb(128, 0, 0)';
+    this.width = properties.width || 2;
+  	this.updateProperties(properties);
   };
 
-  Branch.prototype.onUpdateLocation = function(newLocation) {
+  Branch.prototype.setLength = function(length) {
+    this.length = length;
+    this.updateLength(length);
+  };
+
+  Branch.prototype.updateProperties = function(newProperties) {
   	this.draw();
   };
 
   getDimension();
 
   var tree = new Tree({
-  	depth: 5
+  	depth: 11
   });
     
 })();
