@@ -1,9 +1,42 @@
-.binary-tree{
-  border-bottom: 2px solid #333;
+body{
+	background-color: #eee;
+	margin: 0;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 100;
 }
-.wrap{
-	width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-	
+div, h1{
+	margin: 0;
+	padding: 0;
+}
+.binary-tree {
+    /*border-bottom: 4px solid #666;*/
+}
+
+.title-wrap{
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	width: 100%;
+}
+
+.title-wrap__big{
+	font-size: 80px;
+	font-weight: 400;
+
+}
+.title-wrap__samll{
+	font-size: 12px;
+	font-weight: 100;
+}
+
+.wrap {
+    position: absolute;
+    /*border: 1px solid #ccc;*/
+    width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }

@@ -31,7 +31,7 @@
         this.depth = conf.depth || 5;
         this.noOfBranches = null;
         this.branches = {};
-        this.ROOT_LENGTH = 100;
+        this.ROOT_LENGTH = 80;
         this.ROOT_WIDTH = 15;
         this.branchColor = 'rgb(40, 0, 0)';
         this.leafColor = 'rgb(0, 100, 0)';
@@ -91,7 +91,7 @@
             rad: offset,
             ln: options.parentLn * lnCutRatio,
             width: options.parentWidth * widthCutRatio,
-            color: options.level < this.depth - 1 ? this.branchColor : this.leafColor
+            color: options.level < this.depth - 3 ? this.branchColor : this.leafColor
         };
     };
 
@@ -163,6 +163,6 @@
     getDimension();
 
     // MAKE A TREE
-    var tree = new Tree({ depth: 11 });
+    var tree = new Tree({ depth: 13 });
 
 })();
