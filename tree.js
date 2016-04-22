@@ -126,8 +126,8 @@
         this.node = conf.node;
         this.ele = genEle('line');
         this.ln = conf.ln || 50;
-        this.width = conf.width || 2,
-            this.start = conf.start || { x: 10, y: 10 };
+        this.width = conf.width || 2;
+        this.start = conf.start || { x: 10, y: 10 };
         this.end = conf.end || { x: 50, y: 50 };
         this.color = conf.color || 'rgb(128, 0, 0)';
     };
