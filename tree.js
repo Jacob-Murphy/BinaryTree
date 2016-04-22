@@ -1,9 +1,14 @@
+/**
+ * @author Xin Wang
+ * @date 22/02/2016
+ * @licence MIT
+ */
 (function() {
   'use strict';
 
   // GLOBAL CONFIG
 	var 
-		_wrap = document.querySelector('.binary-tree'),
+		_wrap = document.querySelector('.binary-tree'), // @todo forest later :)
 		_HEIGHT,
 		_WIDTH,
 		_ROOT_START;
@@ -21,7 +26,7 @@
   	};
   }
 
-  // tree class
+  // TREE CLASS
   var Tree = function(conf) {
   	this.depth = conf.depth || 5;
   	this.noOfBranches = null;
@@ -42,9 +47,7 @@
   };
 
   Tree.prototype.initBranches = function() {
-  	var svg = _wrap,
-  	 properties,
-  	 pid,cid;
+  	var svg = _wrap, properties, cid, pbr;
 
   	for(var i = 0 ; i < this.noOfBranches; i += 1) {
   		cid = i + 1;
@@ -59,13 +62,13 @@
           rad: 0
   			};
   		} else {
-  			pid = this.getBranchParent(cid);
+  			pbr = this.branches[this.getBranchParent(cid)];
   		  properties = this.calBranchProperties({
-          start: this.branches[pid].end,
+          start: pbr.end,
           isLeft: cid % 2 === 0,
-          parentLn: this.branches[pid].ln,
-          parentWidth: this.branches[pid].width,
-          parentRad: this.branches[pid].rad,
+          parentLn: pbr.ln,
+          parentWidth: pbr.width,
+          parentRad: pbr.rad,
           level: Math.floor(Math.log2(cid))
         });
       }
@@ -102,11 +105,9 @@
 
     this.noOfBranches = r;
   };
-
  
   Tree.prototype.grow = function() {
-  	var svg = _wrap;
-  	var b, frag = document.createDocumentFragment();
+  	var svg = _wrap, b, frag = document.createDocumentFragment();
   	
   	for(var i in this.branches) {
   		b = this.branches[i];
@@ -115,22 +116,15 @@
   	svg.appendChild(frag);
   };
   
-  // branch class
+  // BRANCH CLASS
   var Branch = function(conf) {
   	this.node = conf.node;
-  	this.parent = conf.parent;
   	this.ele = genEle('line');
     this.ln = conf.ln || 50;
     this.width = conf.width || 2,
     this.start = conf.start || {x : 10, y: 10};
     this.end = conf.end || {x: 50, y: 50};
     this.color = conf.color || 'rgb(128, 0, 0)';
-
-    this.init();
-  };
-
-  Branch.prototype.init = function() {
-  	
   };
 
   Branch.prototype.draw = function() {
@@ -160,10 +154,10 @@
   	this.draw();
   };
 
+  // INIT WRAP DIMENSION FIGURES
   getDimension();
 
-  var tree = new Tree({
-  	depth: 11
-  });
+  // MAKE A TREE
+  var tree = new Tree({ depth: 11 });
     
 })();
