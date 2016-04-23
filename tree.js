@@ -82,7 +82,7 @@
     };
 
     Tree.prototype.calBranchProperties = function(options) {
-        var fine = 10,
+        var fine = 6,
             lnCutRatio = 0.85,
             widthCutRatio = 0.7,
             offset = options.parentRad + (options.isLeft ? Math.PI / fine : -(Math.PI / fine)),
