@@ -99,7 +99,7 @@
     };
 
     Tree.prototype.getBranchParent = function(cid) {
-        return Math.floor(cid / 2);
+        return cid >> 1;
     };
 
     Tree.prototype.calNoOfBranches = function() {
@@ -107,7 +107,7 @@
         var r = 0,
             i = this.depth;
         while (i-- > 0) {
-            r += Math.pow(2, i);
+            r += 1 << i;
         }
 
         this.noOfBranches = r;
