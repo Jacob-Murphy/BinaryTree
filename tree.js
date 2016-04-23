@@ -17,9 +17,13 @@
         return document.createElementNS('http://www.w3.org/2000/svg', type);
     }
 
+    function genRandom(min, max) {
+        return Math.floor(Math.random() * max) + min;
+    }
+
     function getDimension() {
-        _HEIGHT = _wrap.offsetHeight;
-        _WIDTH = _wrap.offsetWidth;
+        _HEIGHT = _wrap.clientHeight;
+        _WIDTH = _wrap.clientWidth;
         _ROOT_START = {
             x: _WIDTH / 2,
             y: _HEIGHT
@@ -78,7 +82,7 @@
     };
 
     Tree.prototype.calBranchProperties = function(options) {
-        var fine = 6,
+        var fine = 10,
             lnCutRatio = 0.85,
             widthCutRatio = 0.7,
             offset = options.parentRad + (options.isLeft ? Math.PI / fine : -(Math.PI / fine)),
