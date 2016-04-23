@@ -108,7 +108,7 @@
         var r = 0,
             i = this.depth;
         while (i-- > 0) {
-            r += Math.pow(2, i);
+            r += 1 << i;
         }
 
         this.noOfBranches = r;
@@ -167,6 +167,6 @@
     getDimension();
 
     // MAKE A TREE
-    var tree = new Tree({ depth: 11 });
+    var tree = new Tree({ depth: 12 });
 
 })();
