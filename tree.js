@@ -100,7 +100,7 @@
     };
 
     Tree.prototype.getBranchParent = function(cid) {
-        return Math.floor(cid / 2);
+        return cid >> 1;
     };
 
     Tree.prototype.calNoOfBranches = function() {
@@ -167,6 +167,6 @@
     getDimension();
 
     // MAKE A TREE
-    var tree = new Tree({ depth: 13 });
+    var tree = new Tree({ depth: 11 });
 
 })();
