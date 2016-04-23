@@ -7,11 +7,7 @@
     'use strict';
 
     // GLOBAL CONFIG
-    var
-        _wrap = document.querySelector('.binary-tree'), // @todo forest later :)
-        _HEIGHT,
-        _WIDTH,
-        _ROOT_START;
+    var trees = document.querySelectorAll('.binary-tree');
 
     function genEle(type) {
         return document.createElementNS('http://www.w3.org/2000/svg', type);
@@ -21,46 +17,50 @@
         return Math.floor(Math.random() * max) + min;
     }
 
-    function getDimension() {
-        _HEIGHT = _wrap.clientHeight;
-        _WIDTH = _wrap.clientWidth;
-        _ROOT_START = {
-            x: _WIDTH / 2,
-            y: _HEIGHT
-        };
-    }
-
     // TREE CLASS
     var Tree = function(conf) {
+        this.parent = conf.parent;
         this.depth = conf.depth || 5;
         this.noOfBranches = null;
         this.branches = {};
-        this.ROOT_LENGTH = 80;
-        this.ROOT_WIDTH = 15;
+        this.ROOT_LENGTH = conf.ROOT_LENGTH || 80;
+        this.ROOT_WIDTH = conf.ROOT_WIDTH || 15;
+        this.BRANCH_OFFSET = conf.BRANCH_OFFSET || 10;
+        this.ROOT_START = null;
         this.branchColor = 'rgb(40, 0, 0)';
         this.leafColor = 'rgb(0, 100, 0)';
 
         this.init();
-
     };
 
+    Tree.prototype.initDimension = function() {
+        if(!this.parent) return;
+        this.ROOT_START = {
+            x: this.parent.clientWidth / 2,
+            y: this.parent.clientHeight
+        };
+    }
+
     Tree.prototype.init = function() {
-        this.calNoOfBranches();
-        this.initBranches();
-        this.grow();
+        this.initDimension();
+        if(this.ROOT_START) {
+            this.calNoOfBranches();
+            this.initBranches();
+            this.grow();
+        }
     };
 
     Tree.prototype.initBranches = function() {
-        var svg = _wrap,
+        var 
             properties, cid, pbr;
 
         for (var i = 0; i < this.noOfBranches; i += 1) {
             cid = i + 1;
-            this.branches[cid] = new Branch({ parent: svg, node: cid });
+            this.branches[cid] = new Branch({  node: cid });
             if (i === 0) {
                 properties = {
-                    start: { x: _ROOT_START.x, y: _ROOT_START.y },
-                    end: { x: _ROOT_START.x, y: _ROOT_START.y - this.ROOT_LENGTH },
+                    start: { x: this.ROOT_START.x, y: this.ROOT_START.y },
+                    end: { x: this.ROOT_START.x, y: this.ROOT_START.y - this.ROOT_LENGTH },
                     ln: this.ROOT_LENGTH,
                     width: this.ROOT_WIDTH,
                     color: this.branchColor,
@@ -82,10 +82,9 @@
     };
 
     Tree.prototype.calBranchProperties = function(options) {
-        var fine = 10,
-            lnCutRatio = 0.85,
+        var lnCutRatio = 0.85,
             widthCutRatio = 0.7,
-            offset = options.parentRad + (options.isLeft ? Math.PI / fine : -(Math.PI / fine)),
+            offset = options.parentRad + (options.isLeft ? Math.PI / this.BRANCH_OFFSET : -(Math.PI / this.BRANCH_OFFSET)),
             x = options.start.x - (options.parentLn * lnCutRatio) * Math.sin(offset),
             y = options.start.y - (options.parentLn * lnCutRatio) * Math.cos(offset);
 
@@ -115,7 +114,7 @@
     };
 
     Tree.prototype.grow = function() {
-        var svg = _wrap,
+        var svg = this.parent,
             b, frag = document.createDocumentFragment();
 
         for (var i in this.branches) {
@@ -163,10 +162,20 @@
         this.draw();
     };
 
-    // INIT WRAP DIMENSION FIGURES
-    getDimension();
+    function growTrees() {
+        var i = 0, ln = trees.length;
+        var tree;
+        for(; i < ln; i += 1) {
+            tree = new Tree({
+                depth: genRandom(5, 8),
+                parent: trees[i],
+                ROOT_LENGTH: 30,
+                ROOT_WIDTH: 10,
+                BRANCH_OFFSET: genRandom(4, 20)
+            });
+        }
+    };
 
-    // MAKE A TREE
-    var tree = new Tree({ depth: 13 });
+    growTrees();
 
 })();
